@@ -7,6 +7,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Core;
 using System.Text.RegularExpressions;
+using MongoDB.Bson.Serialization;
 
 namespace Project_NoSql
 {
@@ -47,6 +48,35 @@ namespace Project_NoSql
             {
                 Console.WriteLine("Vide sa mere");
             }
+        }
+
+
+        public static async void requestMichael() //J'essaie d'instancier dans les classes le doc qu'il me renvoie ici
+        {
+            var collection = _database.GetCollection<BsonDocument>("artworks");
+            var filter = Builders<BsonDocument>.Filter.Eq("acno", "A00001");
+
+            var resultMika = await collection.Find(filter).ToListAsync();
+
+
+            foreach(BsonDocument doc in resultMika)
+            {
+                //BsonSerializer.Deserialize<BsonDocument>(doc);
+
+                var myArtwork = new Artwork();
+               
+                /*
+                myArtwork.AcquisitionYear = BsonInt32["acquisitionYear"].AsInt32;
+                myArtwork.Classification = BsonElement["classification"].AsString;
+                myArtwork.Dimmension
+                myArtwork.Title = 
+                myArtwork.ThumbnailUrl =
+                */
+
+            }
+
+
+            //var deserializedDocument = resultMika[0].
         }
     }
 }
