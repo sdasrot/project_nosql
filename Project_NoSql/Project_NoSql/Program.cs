@@ -51,6 +51,8 @@ namespace Project_NoSql
         }
 
 
+
+        #region RequetesMika
         public static async void requestMichael() //J'essaie d'instancier dans les classes le doc qu'il me renvoie ici
         {
             var collection = _database.GetCollection<BsonDocument>("artworks");
@@ -61,9 +63,9 @@ namespace Project_NoSql
 
             foreach(BsonDocument doc in resultMika)
             {
-                //BsonSerializer.Deserialize<BsonDocument>(doc);
+                BsonSerializer.Deserialize<Artwork>(doc);
 
-                var myArtwork = new Artwork();
+                //var myArtwork = new Artwork();
                
                 /*
                 myArtwork.AcquisitionYear = BsonInt32["acquisitionYear"].AsInt32;
@@ -78,5 +80,53 @@ namespace Project_NoSql
 
             //var deserializedDocument = resultMika[0].
         }
+
+
+        public static async void requestAcquisitionYearEqual(int year)
+        {
+            var collection = _database.GetCollection<BsonDocument>("artworks");
+            var filter = Builders<BsonDocument>.Filter.Eq("acquisitionYear", year);
+            var resultMika = await collection.Find(filter).ToListAsync();
+
+            //TODO deserialization
+        }
+
+        public static async void requestAcquisitionYearGte(int year)
+        {
+            var collection = _database.GetCollection<BsonDocument>("artworks");
+            var filter = Builders<BsonDocument>.Filter.Gte("acquisitionYear", year);
+            var resultMika = await collection.Find(filter).ToListAsync();
+            //TODO deserialization
+
+        }
+
+        public static async void requestAcquisitionYearLte(int year)
+        {
+            var collection = _database.GetCollection<BsonDocument>("artworks");
+            var filter = Builders<BsonDocument>.Filter.Lte("acquisitionYear", year);
+            var resultMika = await collection.Find(filter).ToListAsync();
+            //TODO deserialization
+
+        }
+
+        public static async void requestDimensionGte(int h, int w)
+        {
+            var collection = _database.GetCollection<BsonDocument>("artworkds");
+            var filter = Builders<BsonDocument>.Filter.Gte("height", h) | Builders<BsonDocument>.Filter.Gte("width", w);
+            var resultMika = await collection.Find(filter).ToListAsync();
+            //TODO deserialization
+        }
+
+        public static async void requestDimensionLte(int h, int w)
+        {
+            var collection = _database.GetCollection<BsonDocument>("artworkds");
+            var filter = Builders<BsonDocument>.Filter.Lte("height", h) | Builders<BsonDocument>.Filter.Lte("width", w);
+            var resultMika = await collection.Find(filter).ToListAsync();
+            //TODO deserialization
+        }
+
+        #endregion
+
+
     }
 }
