@@ -18,7 +18,7 @@ namespace Project_NoSql
         static void Main(string[] args)
         {
             _client = new MongoClient();
-            _database = _client.GetDatabase("projet");
+            _database = _client.GetDatabase("project");
             Console.WriteLine("Connected to project database etablished");
 
 
@@ -32,15 +32,14 @@ namespace Project_NoSql
             //var filter = Builders<BsonDocument>.Filter.Eq("fc", BsonRegularExpression.Create(new Regex("Lemuel")));
             //var result = await collection.Find(filter).ToListAsync();
             var aggregate = collection.Aggregate().Match(new BsonDocument { { "fc", BsonRegularExpression.Create(new Regex("Francis")) }, { "activePlaceCount", 0 } });
-            var results = await aggregate.ToListAsync();
-            string s = null;
+            var result = await aggregate.ToListAsync();
             int i;
-            int y = results.Count();
-            if (results.Count() != 0)
+            int y = result.Count();
+            if (result.Count() != 0)
             {
                 for (i = 0; i < y; i++)
                 {
-                    Console.WriteLine(results[i]);
+                    Console.WriteLine(result[i]);
                 }
             }
             else
