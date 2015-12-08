@@ -8,6 +8,10 @@ using MongoDB.Driver;
 using MongoDB.Driver.Core;
 using System.Text.RegularExpressions;
 using MongoDB.Bson.Serialization;
+using System.Xml;
+using Newtonsoft.Json;
+
+
 
 namespace Project_NoSql
 {
@@ -19,11 +23,11 @@ namespace Project_NoSql
         static void Main(string[] args)
         {
             _client = new MongoClient();
-            _database = _client.GetDatabase("projet");
+            _database = _client.GetDatabase("project");
             Console.WriteLine("Connected to project database etablished");
 
 
-            requete();
+            requestMapReduce();
             Console.Read();
         }
 
@@ -56,24 +60,23 @@ namespace Project_NoSql
         public static async void requestMichael() //J'essaie d'instancier dans les classes le doc qu'il me renvoie ici
         {
             var collection = _database.GetCollection<BsonDocument>("artworks");
-            var filter = Builders<BsonDocument>.Filter.Eq("acno", "A00001");
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", "A00001");
 
             var resultMika = await collection.Find(filter).ToListAsync();
 
-
             foreach(BsonDocument doc in resultMika)
             {
-                BsonSerializer.Deserialize<Artwork>(doc);
 
-                //var myArtwork = new Artwork();
-               
-                /*
-                myArtwork.AcquisitionYear = BsonInt32["acquisitionYear"].AsInt32;
-                myArtwork.Classification = BsonElement["classification"].AsString;
-                myArtwork.Dimmension
-                myArtwork.Title = 
-                myArtwork.ThumbnailUrl =
-                */
+
+                //Conversion en string
+                string docJson = doc.ToJson();
+
+                Artwork artwork = new Artwork();
+                artwork.instantiateFromXml(docJson);
+
+
+                Console.WriteLine(artwork.toString());
+
 
             }
 
@@ -111,7 +114,7 @@ namespace Project_NoSql
 
         public static async void requestDimensionGte(int h, int w)
         {
-            var collection = _database.GetCollection<BsonDocument>("artworkds");
+            var collection = _database.GetCollection<BsonDocument>("artworks");
             var filter = Builders<BsonDocument>.Filter.Gte("height", h) | Builders<BsonDocument>.Filter.Gte("width", w);
             var resultMika = await collection.Find(filter).ToListAsync();
             //TODO deserialization
@@ -119,10 +122,20 @@ namespace Project_NoSql
 
         public static async void requestDimensionLte(int h, int w)
         {
-            var collection = _database.GetCollection<BsonDocument>("artworkds");
+            var collection = _database.GetCollection<BsonDocument>("artworks");
             var filter = Builders<BsonDocument>.Filter.Lte("height", h) | Builders<BsonDocument>.Filter.Lte("width", w);
             var resultMika = await collection.Find(filter).ToListAsync();
             //TODO deserialization
+        }
+
+        public static async void requestMapReduce()
+        {
+            var collection = _database.GetCollection<BsonDocument>("artworks");
+            var map = "function() { emit(this.acquisitionYear, 1);}";
+            var reduce = "function(key, values) return Array.sum(values):";
+            var result = collection.MapReduceAsync<BsonDocument>(map, reduce);
+
+            Console.WriteLine(result.GetType());
         }
 
         #endregion
